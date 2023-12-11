@@ -43,7 +43,7 @@ function DownloadFont {
     }
 }
 
-$fontsList = "https://raw.githubusercontent.com/amnweb/nf-installer/fonts.txt"
+$fontsList = "https://raw.githubusercontent.com/amnweb/nf-installer/main/fonts.txt"
 $fontsVers = "3.1.1"
 $ProgressPreference = 'SilentlyContinue'
 Add-Type -AssemblyName System.Windows.Forms
