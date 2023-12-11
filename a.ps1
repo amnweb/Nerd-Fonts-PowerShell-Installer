@@ -5,7 +5,6 @@ function DownloadFont {
         [Parameter(Mandatory=$true)]
         [string]$version
     )
-
     # Construct the URL using the format operator -f
     $url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v{0}/{1}.zip" -f $version, $fontname
     
