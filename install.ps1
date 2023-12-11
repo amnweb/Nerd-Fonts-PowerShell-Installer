@@ -44,7 +44,7 @@ function DownloadFont {
     }
 }
 
-$fontsList = (Invoke-webrequest -URI "fonts.txt").Content
+$fontsList = (Invoke-webrequest -URI "https://raw.githubusercontent.com/amnweb/nf-installer/main/fonts.txt").Content
 $fontsVers = "3.1.1"
 $ProgressPreference = 'SilentlyContinue'
 Add-Type -AssemblyName System.Windows.Forms
