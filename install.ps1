@@ -10,8 +10,8 @@ function DownloadFont {
     $url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v{0}/{1}.zip" -f $version, $fontname
     
     try {
-        Write-Host "Installing " -ForegroundColor DarkRed -NoNewLine
-        Write-Host $fontname -ForegroundColor Red
+        Write-Host "Installing " -ForegroundColor White -NoNewLine
+        Write-Host $fontname -ForegroundColor Green
         # Download the font zip file
         Invoke-WebRequest -Uri $url -OutFile "$fontname.zip"
 
@@ -43,8 +43,14 @@ function DownloadFont {
         Write-Error "An error occurred: $_"
     }
 }
-
-$fontsList = (Invoke-webrequest -URI "https://raw.githubusercontent.com/amnweb/nf-installer/main/fonts.txt").Content
+try {
+    $fontsList = (Invoke-webrequest -URI "https://raw.githubusercontent.com/amnweb/nf-installer/main/fonts.txt").Content
+}
+catch {
+    # An error occurred, likely due to a problem with the web request
+    Write-Host "An error occurred while trying to download the content: $_" -ForegroundColor Red
+    exit 
+}
 $fontsVers = "3.1.1"
 $ProgressPreference = 'SilentlyContinue'
 Add-Type -AssemblyName System.Windows.Forms
@@ -89,7 +95,7 @@ $fontsArray = $fontsList -split "`n"
 if ($fontsList.Length) {
     [void]$CheckListBox.Items.Add("Select All")
     foreach ($font in $fontsArray) {
-        [void]$CheckListBox.Items.Add($font)
+        [void]$CheckListBox.Items.Add($font.Trim())
     }
 } else {
     Write-Host "The file $fontsList does not exist." -ForegroundColor Red
@@ -98,7 +104,6 @@ if ($fontsList.Length) {
 # Handle the ItemCheck event to select or deselect all items
 $CheckListBox.add_ItemCheck({
     param($eventSender, $e)
-    
     if ($e.Index -eq 0) { # Check if the "Select All" checkbox is toggled
         $isChecked = $e.NewValue -eq [System.Windows.Forms.CheckState]::Checked
         for ($i = 1; $i -lt $eventSender.Items.Count; $i++) {
