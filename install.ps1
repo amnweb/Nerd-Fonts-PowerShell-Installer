@@ -36,7 +36,7 @@ function DownloadFont {
 
         # Clean up the downloaded and extracted files
         Remove-Item -Path $fontname -Recurse -Force
-        Remove-Item -Path "$fontname.zip" -Force
+        #Remove-Item -Path "$fontname.zip" -Force
     } catch {
         Write-Error "An error occurred: $_"
     }
