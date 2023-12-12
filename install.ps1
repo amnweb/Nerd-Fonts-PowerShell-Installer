@@ -1,13 +1,11 @@
 function DownloadFont {
     param(
         [Parameter(Mandatory=$true)]
-        [string]$fontname,
-        [Parameter(Mandatory=$true)]
-        [string]$version
+        [string]$fontname
     )
 
     # Construct the URL using the format operator -f
-    $url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v{0}/{1}.zip" -f $version, $fontname
+    $url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/{0}.zip" -f $fontname
     
     try {
         Write-Host "Installing " -ForegroundColor White -NoNewLine
@@ -51,7 +49,7 @@ catch {
     Write-Host "An error occurred while trying to download the content: $_" -ForegroundColor Red
     exit 
 }
-$fontsVers = "3.1.1"
+ 
 $ProgressPreference = 'SilentlyContinue'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -117,7 +115,7 @@ $result = $form.ShowDialog()
 if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
     foreach ($checkbox in $CheckListBox.CheckedItems) {
         if($checkbox -ne 'Select All'){
-            DownloadFont $checkbox $fontsVers
+            DownloadFont $checkbox
         }
         
     }
