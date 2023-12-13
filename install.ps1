@@ -6,7 +6,7 @@ function DownloadAndInstallFont {
     $url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/{0}.zip" -f $fontName
     $LocalAppData = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::LocalApplicationData)
     $DestinationFolder = Join-Path -Path $LocalAppData -ChildPath "Microsoft\Windows\Fonts\$fontName"
-    $Temp = [System.Environment]::GetEnvironmentVariable('TEMP', 'Machine')
+    $Temp = $env:TEMP
 
     # Create the destination folder if it doesn't exist
     if (-not (Test-Path $DestinationFolder)) {
