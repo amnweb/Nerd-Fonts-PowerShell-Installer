@@ -40,14 +40,31 @@ function DownloadAndInstallFont {
     }
 }
 
-
-
 try {
-    $fontsList = (Invoke-webrequest -URI "https://raw.githubusercontent.com/amnweb/nf-installer/main/fonts.txt").Content
+    Write-Host "Fetching available Nerd Fonts..." -ForegroundColor Cyan
+    
+    # Get the latest release info using the GitHub API
+    $releaseInfo = Invoke-RestMethod -Uri "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest"
+    
+    # Extract all assets and filter for .zip files only
+    $fontsArray = $releaseInfo.assets | 
+                 Where-Object { $_.name -like "*.zip" -and $_.name -notlike "*.tar.xz" } | 
+                 ForEach-Object { 
+                     # Extract font name without extension
+                     $_.name -replace '\.zip$', ''
+                 } | 
+                 Sort-Object
+                 
+    if ($fontsArray.Count -eq 0) {
+        Write-Host "No fonts found in the latest release." -ForegroundColor Red
+        exit
+    }
+    
+    Write-Host "Found $($fontsArray.Count) fonts available for installation." -ForegroundColor Green
 }
 catch {
-    # An error occurred, likely due to a problem with the web request
-    Write-Host "An error occurred while trying to download the content: $_" -ForegroundColor Red
+    # An error occurred, likely due to a problem with the API request
+    Write-Host "An error occurred while trying to fetch fonts from GitHub: $_" -ForegroundColor Red
     exit 
 }
  
@@ -84,20 +101,19 @@ $label.Size = New-Object System.Drawing.Size(280,20)
 $label.Text = 'Please select a font to install'
 $form.Controls.Add($label)
 
-
 $CheckListBox = New-Object System.Windows.Forms.CheckedListBox
 $CheckListBox.Location = New-Object System.Drawing.Point(10,40)
 $CheckListBox.Size = New-Object System.Drawing.Size(260,220) 
 $CheckListBox.CheckOnClick = $true
 
-$fontsArray = $fontsList -split "`n"
-if ($fontsList.Length) {
+if ($fontsArray.Count -gt 0) {
     [void]$CheckListBox.Items.Add("Select All")
     foreach ($font in $fontsArray) {
-        [void]$CheckListBox.Items.Add($font.Trim())
+        [void]$CheckListBox.Items.Add($font)
     }
 } else {
-    Write-Host "The file $fontsList does not exist." -ForegroundColor Red
+    Write-Host "No fonts available to install." -ForegroundColor Red
+    exit
 }
 
 # Handle the ItemCheck event to select or deselect all items
@@ -118,7 +134,6 @@ if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
         if($checkbox -ne 'Select All'){
             DownloadAndInstallFont $checkbox
         }
-        
     }
 }
 $form.Dispose()
